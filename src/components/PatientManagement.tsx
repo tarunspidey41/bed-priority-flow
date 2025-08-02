@@ -12,7 +12,13 @@ import { cn } from '@/lib/utils';
 interface PatientManagementProps {
   patients: Patient[];
   waitingQueue: Patient[];
-  onAddPatient: (patient: Omit<Patient, 'id' | 'arrivalTime'>) => void;
+  onAddPatient: (patient: {
+    name: string;
+    age: number;
+    priority: Priority;
+    condition: string;
+    estimatedStay: number;
+  }) => void;
 }
 
 const priorityColors: Record<Priority, string> = {

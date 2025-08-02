@@ -10,23 +10,34 @@ import {
   Clock,
   AlertCircle,
   TrendingUp,
-  Hospital
+  Hospital,
+  Brain,
+  BarChart3
 } from 'lucide-react';
 import { PatientManagement } from '@/components/PatientManagement';
 import { BedAllocation } from '@/components/BedAllocation';
 import { DischargeManagement } from '@/components/DischargeManagement';
-import { useHospitalData } from '@/hooks/useHospitalData';
+import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
+import { useAdvancedHospitalData } from '@/hooks/useAdvancedHospitalData';
 
 const Index = () => {
   const {
     patients,
     beds,
+    staff,
     waitingQueue,
+    currentAlgorithm,
+    emergencyLevel,
+    simulationSettings,
+    metrics,
     addPatient,
     allocateBed,
     dischargePatient,
     autoAllocateNext,
-  } = useHospitalData();
+    setCurrentAlgorithm,
+    setSimulationSettings,
+    setEmergencyLevel,
+  } = useAdvancedHospitalData();
 
   const availableBeds = beds.filter(b => b.status === 'available').length;
   const occupiedBeds = beds.filter(b => b.status === 'occupied').length;
@@ -144,8 +155,12 @@ const Index = () => {
         )}
 
         {/* Main Modules */}
-        <Tabs defaultValue="patients" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="analytics" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analytics & AI
+            </TabsTrigger>
             <TabsTrigger value="patients" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Patient Management
@@ -159,6 +174,18 @@ const Index = () => {
               Discharge Management
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics" className="space-y-6">
+            <AnalyticsDashboard
+              metrics={metrics}
+              simulationSettings={simulationSettings}
+              currentAlgorithm={currentAlgorithm}
+              emergencyLevel={emergencyLevel}
+              onSimulationSettingsChange={setSimulationSettings}
+              onAlgorithmChange={setCurrentAlgorithm}
+              onEmergencyTrigger={setEmergencyLevel}
+            />
+          </TabsContent>
 
           <TabsContent value="patients" className="space-y-6">
             <PatientManagement

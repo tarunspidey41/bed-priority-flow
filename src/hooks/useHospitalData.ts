@@ -2,14 +2,14 @@ import { useState, useCallback } from 'react';
 import { Patient, Bed, Priority, AllocationMethod, AllocationResult } from '@/types/hospital';
 
 const initialBeds: Bed[] = [
-  { id: 'bed-1', number: 'ICU-001', status: 'available', ward: 'ICU' },
-  { id: 'bed-2', number: 'ICU-002', status: 'available', ward: 'ICU' },
-  { id: 'bed-3', number: 'ICU-003', status: 'occupied', ward: 'ICU', patientId: 'patient-demo' },
-  { id: 'bed-4', number: 'GEN-001', status: 'available', ward: 'General' },
-  { id: 'bed-5', number: 'GEN-002', status: 'available', ward: 'General' },
-  { id: 'bed-6', number: 'GEN-003', status: 'maintenance', ward: 'General' },
-  { id: 'bed-7', number: 'ER-001', status: 'available', ward: 'Emergency' },
-  { id: 'bed-8', number: 'ER-002', status: 'available', ward: 'Emergency' },
+  { id: 'bed-1', number: 'ICU-001', status: 'available', ward: 'ICU', equipment: [], nursesAssigned: [] },
+  { id: 'bed-2', number: 'ICU-002', status: 'available', ward: 'ICU', equipment: [], nursesAssigned: [] },
+  { id: 'bed-3', number: 'ICU-003', status: 'occupied', ward: 'ICU', patientId: 'patient-demo', equipment: [], nursesAssigned: [] },
+  { id: 'bed-4', number: 'GEN-001', status: 'available', ward: 'General', equipment: [], nursesAssigned: [] },
+  { id: 'bed-5', number: 'GEN-002', status: 'available', ward: 'General', equipment: [], nursesAssigned: [] },
+  { id: 'bed-6', number: 'GEN-003', status: 'maintenance', ward: 'General', equipment: [], nursesAssigned: [] },
+  { id: 'bed-7', number: 'ER-001', status: 'available', ward: 'Emergency', equipment: [], nursesAssigned: [] },
+  { id: 'bed-8', number: 'ER-002', status: 'available', ward: 'Emergency', equipment: [], nursesAssigned: [] },
 ];
 
 const priorityWeights: Record<Priority, number> = {
@@ -30,17 +30,57 @@ export const useHospitalData = () => {
       arrivalTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
       estimatedStay: 24,
       bedId: 'bed-3',
+      vitalSigns: {
+        heartRate: 85,
+        bloodPressure: '120/80',
+        temperature: 98.6,
+        oxygenSaturation: 98,
+        respiratoryRate: 16,
+        lastChecked: new Date(),
+      },
+      medicalHistory: ['Hypertension', 'Diabetes'],
+      allergies: ['Penicillin'],
+      assignedStaff: ['staff-1'],
+      lastUpdate: new Date(),
+      emergencyContact: {
+        name: 'Jane Doe',
+        relationship: 'Spouse',
+        phone: '555-0123',
+      },
     },
   ]);
   
   const [beds, setBeds] = useState<Bed[]>(initialBeds);
   const [waitingQueue, setWaitingQueue] = useState<Patient[]>([]);
 
-  const addPatient = useCallback((patient: Omit<Patient, 'id' | 'arrivalTime'>) => {
+  const addPatient = useCallback((patientData: {
+    name: string;
+    age: number;
+    priority: Priority;
+    condition: string;
+    estimatedStay: number;
+  }) => {
     const newPatient: Patient = {
-      ...patient,
+      ...patientData,
       id: `patient-${Date.now()}`,
       arrivalTime: new Date(),
+      vitalSigns: {
+        heartRate: Math.floor(Math.random() * 40) + 60,
+        bloodPressure: '120/80',
+        temperature: 98.6,
+        oxygenSaturation: 95 + Math.floor(Math.random() * 5),
+        respiratoryRate: 12 + Math.floor(Math.random() * 8),
+        lastChecked: new Date(),
+      },
+      medicalHistory: [],
+      allergies: [],
+      assignedStaff: [],
+      lastUpdate: new Date(),
+      emergencyContact: {
+        name: 'Emergency Contact',
+        relationship: 'Family',
+        phone: '555-0000',
+      },
     };
     
     setPatients(prev => [...prev, newPatient]);
