@@ -14,8 +14,7 @@ import {
   Brain,
   BarChart3
 } from 'lucide-react';
-import { PatientManagement } from '@/components/PatientManagement';
-import { BedAllocation } from '@/components/BedAllocation';
+import { PatientBedManagement } from '@/components/PatientBedManagement';
 import { DischargeManagement } from '@/components/DischargeManagement';
 import { AnalyticsDashboard } from '@/components/AnalyticsDashboard';
 import { useAdvancedHospitalData } from '@/hooks/useAdvancedHospitalData';
@@ -156,18 +155,14 @@ const Index = () => {
 
         {/* Main Modules */}
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Analytics & AI
             </TabsTrigger>
-            <TabsTrigger value="patients" className="flex items-center gap-2">
+            <TabsTrigger value="management" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Patient Management
-            </TabsTrigger>
-            <TabsTrigger value="allocation" className="flex items-center gap-2">
-              <Bed className="h-4 w-4" />
-              Bed Allocation
+              Patient & Bed Management
             </TabsTrigger>
             <TabsTrigger value="discharge" className="flex items-center gap-2">
               <UserMinus className="h-4 w-4" />
@@ -187,19 +182,12 @@ const Index = () => {
             />
           </TabsContent>
 
-          <TabsContent value="patients" className="space-y-6">
-            <PatientManagement
-              patients={patients}
-              waitingQueue={waitingQueue}
-              onAddPatient={addPatient}
-            />
-          </TabsContent>
-
-          <TabsContent value="allocation" className="space-y-6">
-            <BedAllocation
+          <TabsContent value="management" className="space-y-6">
+            <PatientBedManagement
               patients={patients}
               beds={beds}
               waitingQueue={waitingQueue}
+              onAddPatient={addPatient}
               onAllocateBed={allocateBed}
               onAutoAllocateNext={autoAllocateNext}
             />
