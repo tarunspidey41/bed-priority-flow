@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2><i class="fas fa-chart-bar me-2"></i>Analytics & AI Dashboard</h2>
+
+<!-- Key Metrics -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4>{{ metrics.total_patients }}</h4>
+                <small class="text-muted">Total Patients</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4>{{ metrics.admitted_today }}</h4>
+                <small class="text-muted">Admitted Today</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4>{{ metrics.average_wait_time }}</h4>
+                <small class="text-muted">Avg Wait (min)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4>{{ metrics.bed_utilization }}%</h4>
+                <small class="text-muted">Bed Utilization</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4>{{ metrics.critical_patients }}</h4>
+                <small class="text-muted">Critical Patients</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="text-success">{{ metrics.emergency_level.title() }}</h4>
+                <small class="text-muted">Emergency Level</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Patient Priority Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Bed Status Overview</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="bedChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Predictions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-brain me-2"></i>AI Predictions & Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="alert alert-info">
+                            <strong>Expected Arrivals:</strong><br>
+                            Next hour: 3-5 patients<br>
+                            Peak time: 2:00-4:00 PM
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alert alert-warning">
+                            <strong>Resource Alert:</strong><br>
+                            ICU approaching capacity<br>
+                            Consider early discharge prep
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alert alert-success">
+                            <strong>Optimization:</strong><br>
+                            Current allocation efficiency: 85%<br>
+                            Suggested: Priority-based sorting
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Priority Distribution Chart
+const priorityData = {
+    critical: {{ patients | selectattr('priority', 'equalto', 'critical') | list | length }},
+    high: {{ patients | selectattr('priority', 'equalto', 'high') | list | length }},
+    medium: {{ patients | selectattr('priority', 'equalto', 'medium') | list | length }},
+    low: {{ patients | selectattr('priority', 'equalto', 'low') | list | length }}
+};
+
+new Chart(document.getElementById('priorityChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Critical', 'High', 'Medium', 'Low'],
+        datasets: [{
+            data: [priorityData.critical, priorityData.high, priorityData.medium, priorityData.low],
+            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Bed Status Chart
+const bedData = {
+    available: {{ beds | selectattr('status', 'equalto', 'available') | list | length }},
+    occupied: {{ beds | selectattr('status', 'equalto', 'occupied') | list | length }},
+    maintenance: {{ beds | selectattr('status', 'equalto', 'maintenance') | list | length }}
+};
+
+new Chart(document.getElementById('bedChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Available', 'Occupied', 'Maintenance'],
+        datasets: [{
+            data: [bedData.available, bedData.occupied, bedData.maintenance],
+            backgroundColor: ['#198754', '#dc3545', '#ffc107']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

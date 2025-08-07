@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-4">
+            <i class="fas fa-hospital text-primary"></i>
+            Hospital Dashboard
+        </h1>
+        <p class="lead">Priority-Based CPU Scheduling Simulation for Patient Allocation</p>
+    </div>
+</div>
+
+<!-- System Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <i class="fas fa-bed fa-2x text-success mb-2"></i>
+                <h3>{{ (beds | selectattr('status', 'equalto', 'available') | list | length) }}</h3>
+                <p class="text-muted">Available Beds</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x text-danger mb-2"></i>
+                <h3>{{ (beds | selectattr('status', 'equalto', 'occupied') | list | length) }}</h3>
+                <p class="text-muted">Occupied Beds</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                <h3>{{ waiting_queue | length }}</h3>
+                <p class="text-muted">Waiting Queue</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card metric-card">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                <h3>{{ metrics.bed_utilization }}%</h3>
+                <p class="text-muted">Occupancy Rate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Priority Alerts -->
+{% if metrics.critical_patients > 0 or waiting_queue | length > 3 %}
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <strong>System Alerts:</strong>
+    {% if metrics.critical_patients > 0 %}
+        <span class="badge bg-danger ms-2">{{ metrics.critical_patients }} Critical Patient(s)</span>
+    {% endif %}
+    {% if waiting_queue | length > 3 %}
+        <span class="badge bg-warning text-dark ms-2">{{ waiting_queue | length }} Patients Waiting</span>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-2"></i>
+                Analytics & AI
+            </div>
+            <div class="card-body">
+                <p>View system performance, AI predictions, and scheduling analytics.</p>
+                <a href="{{ url_for('analytics') }}" class="btn btn-primary">
+                    <i class="fas fa-analytics"></i> View Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-user-plus me-2"></i>
+                Patient & Bed Management
+            </div>
+            <div class="card-body">
+                <p>Register patients, allocate beds, and manage the waiting queue.</p>
+                <a href="{{ url_for('patient_bed_management') }}" class="btn btn-success">
+                    <i class="fas fa-bed"></i> Manage Patients & Beds
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Discharge Management
+            </div>
+            <div class="card-body">
+                <p>Manage patient discharges and bed availability.</p>
+                <a href="{{ url_for('discharge_management') }}" class="btn btn-info">
+                    <i class="fas fa-user-minus"></i> Manage Discharges
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
